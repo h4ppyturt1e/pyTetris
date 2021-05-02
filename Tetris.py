@@ -1,6 +1,6 @@
 import pygame
 import random
-from mino import *
+from mino import Tetromino
 
 BLACK = (50, 50, 50)
 WHITE = (200, 200, 200)
@@ -14,6 +14,7 @@ piecesInQueue = 5
 gravity = 1
 maxLockCounter = 3
 global boardState
+
 
 def main():
     fillQueue()
@@ -30,7 +31,8 @@ def main():
     pressed_down = False
     pressed_z = False
 
-    while True:
+    gameOver = False
+    while not gameOver:
         drawGrid(boardState)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -127,13 +129,6 @@ def hold():
         nextQueue[0] = heldPiece
         heldPiece = temp
     print("held:{}\ncurrent:{}\nnext:{}".format(heldPiece, nextQueue[0], nextQueue[1:]))
-
-
-# def clearBoard():
-#     with open("NewBoard.txt") as clear:
-#         template = clear.readlines()
-#     with open("Board.txt", "w") as board:
-#         board.writelines(template)
 
 
 if __name__ == '__main__':
