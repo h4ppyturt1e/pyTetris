@@ -61,20 +61,16 @@ class Tetromino:
                             return False, boardState  # to signify failure in order to reverse fields
 
         if toBeRemoved == toBeFilled:
-            print("did not move")
+            # print("did not move")
             return False, boardState
 
         for i, j in toBeRemoved:
             boardState[i] = boardState[i][:j] + "." + boardState[i][j+1:]
-        print("removed: {}".format(toBeRemoved))
+        # print("removed: {}".format(toBeRemoved))
 
         for i, j in toBeFilled:
             boardState[i] = boardState[i][:j] + "X" + boardState[i][j+1:]
-        print("filled: {}".format(toBeFilled))
-
-        # with open("Board.txt", "w") as f:
-        #     print("test")
-        #     f.writelines(boardState)
+        # print("filled: {}".format(toBeFilled))
 
         return True, boardState  # to signify success
 
@@ -104,12 +100,28 @@ class Tetromino:
 
     def fall(self, boardState):  # remember to add collison testing
         self.y += 1
-        if not self.draw(boardState)[0]:
+        attemptDraw = self.draw(boardState)[0]
+        if not attemptDraw:
             self.y -= 1
-        return boardState
+        return boardState, attemptDraw
+
+    def hardDrop(self, boardState):
+        print("harddrop")
+        attemptDraw = self.draw(boardState)[0]
+        while attemptDraw:
+            print("R")
+            self.y += 1
+        return boardState, attemptDraw
+
+    def incrementLock(self):
+        self.lockCounter += 1
 
     def getRot(self):
         return self.rot
 
+    def getLockState(self):
+        return self.lockCounter
+
     def getPos(self):
-        return "({}, {})".format(self.x, self.y)
+        print("({}, {})".format(self.x, self.y))
+        return self.x, self.y

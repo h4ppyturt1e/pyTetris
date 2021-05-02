@@ -13,7 +13,7 @@ pieces = ['I', 'J', 'L', 'O', 'S', 'T', 'Z']
 piecesInQueue = 5
 gravity = 1
 fps = 24
-maxLockCounter = 3
+maxLockCounter = 4
 global boardState
 
 
@@ -25,71 +25,50 @@ def main():
     global SCREEN, CLOCK
     pygame.init()
     SCREEN = pygame.display.set_mode((WINDOW_WIDTH + 200, WINDOW_HEIGHT))
-    delay = int(1000/gravity)
-    framerate = int(1000/fps)
-    pressed_left = False
-    pressed_right = False
-    pressed_up = False
-    pressed_down = False
-    pressed_z = False
-
+    fallRate = int(1000/gravity)
+    repeatRate = int(1000/fps)
     gameOver = False
+
+    timer = 0
     while not gameOver:
         drawGrid(boardState)
 
-        keys = pygame.key.get_pressed()
-        if keys[pygame.K_LEFT]:
-            boardState = p1.moveLeft(boardState)
-        if keys[pygame.K_RIGHT]:
-            boardState = p1.moveRight(boardState)
-        if keys[pygame.K_DOWN]:
-            boardState = p1.fall(boardState)
+        keyPresses(p1, boardState)
 
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-            # if keys[pygame.K_UP]:
-            #     boardState = p1.rotateCW(boardState)
-            # if keys[pygame.K_z]:
-            #     boardState = p1.rotateCCW(boardState)
-            elif event.type == pygame.KEYDOWN:  # check for key presses
-            #     if event.key == pygame.K_LEFT:  # left arrow turns left
-            #         pressed_left = True
-            #     elif event.key == pygame.K_RIGHT:  # right arrow turns right
-            #         pressed_right = True
-                if event.key == pygame.K_UP:  # up arrow goes up
-                    boardState = p1.rotateCW(boardState)
-                # elif event.key == pygame.K_DOWN:  # down arrow goes down
-                #     pressed_down = True
-                elif event.key == pygame.K_z:
-                    boardState = p1.rotateCCW(boardState)
-            # elif event.type == pygame.KEYUP:  # check for key releases
-            #     if event.key == pygame.K_LEFT:  # left arrow turns left
-            #         pressed_left = False
-            #     elif event.key == pygame.K_RIGHT:  # right arrow turns right
-            #         pressed_right = False
-            #     elif event.key == pygame.K_UP:  # up arrow goes up
-            #         pressed_up = False
-            #     elif event.key == pygame.K_DOWN:  # down arrow goes down
-            #         pressed_down = False
-            #     elif event.key == pygame.K_z:
-            #         pressed_z = False
+        if timer > fallRate:
+            boardState, successFall = p1.fall(boardState)
+            if not successFall:
+                p1.incrementLock()
+            timer = 0
 
+        if p1.getLockState() >= maxLockCounter:
+            lockPiece(p1)
 
-            # if pressed_left:
-            #     boardState = p1.moveLeft(boardState)
-            # if pressed_right:
-            #     boardState = p1.moveRight(boardState)
-            # if pressed_up:
-            #     boardState = p1.rotateCW(boardState)
-            # if pressed_z:
-            #     boardState = p1.rotateCCW(boardState)
-            # if pressed_down:
-            #     boardState = p1.fall(boardState)
-
-        # boardState = p1.fall(boardState)
-        pygame.time.delay(framerate)  # this one
+        pygame.time.delay(repeatRate)  # this one
         pygame.display.update()
+        timer += repeatRate
+
+
+def keyPresses(curPiece, boardState):
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_LEFT]:
+        boardState = curPiece.moveLeft(boardState)
+    if keys[pygame.K_RIGHT]:
+        boardState = curPiece.moveRight(boardState)
+    if keys[pygame.K_DOWN]:
+        boardState = curPiece.fall(boardState)[0]
+
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_UP:
+                boardState = curPiece.rotateCW(boardState)
+            elif event.key == pygame.K_z:
+                boardState = curPiece.rotateCCW(boardState)
+            elif event.key == pygame.K_SPACE:
+                boardState = curPiece.hardDrop(boardState)
 
 
 def drawGrid(boardState):
@@ -145,5 +124,16 @@ def hold():
     print("held:{}\ncurrent:{}\nnext:{}".format(heldPiece, nextQueue[0], nextQueue[1:]))
 
 
+def lockPiece(piece):
+    x, y = piece.getPos()
+
+
+
 if __name__ == '__main__':
     main()
+
+
+# TODO 1: check if piece has locked
+# if piece is locked, change color of piece
+# then, get new piece from queue and fill the queue back up
+#
