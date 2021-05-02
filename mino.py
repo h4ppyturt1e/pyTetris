@@ -1,6 +1,9 @@
 import random
+
+HEIGHT = 22
+WIDTH = 10
+
 pieces = ['I', 'J', 'L', 'O', 'S', 'T', 'Z']
-from Tetris import HEIGHT, WIDTH
 buffer = 3
 
 global boardState

@@ -12,6 +12,7 @@ WINDOW_WIDTH = blockSize * WIDTH
 pieces = ['I', 'J', 'L', 'O', 'S', 'T', 'Z']
 piecesInQueue = 5
 gravity = 1
+fps = 24
 maxLockCounter = 3
 global boardState
 
@@ -25,6 +26,7 @@ def main():
     pygame.init()
     SCREEN = pygame.display.set_mode((WINDOW_WIDTH + 200, WINDOW_HEIGHT))
     delay = int(1000/gravity)
+    framerate = int(1000/fps)
     pressed_left = False
     pressed_right = False
     pressed_up = False
@@ -34,47 +36,59 @@ def main():
     gameOver = False
     while not gameOver:
         drawGrid(boardState)
+
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_LEFT]:
+            boardState = p1.moveLeft(boardState)
+        if keys[pygame.K_RIGHT]:
+            boardState = p1.moveRight(boardState)
+        if keys[pygame.K_DOWN]:
+            boardState = p1.fall(boardState)
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
+            # if keys[pygame.K_UP]:
+            #     boardState = p1.rotateCW(boardState)
+            # if keys[pygame.K_z]:
+            #     boardState = p1.rotateCCW(boardState)
             elif event.type == pygame.KEYDOWN:  # check for key presses
-                if event.key == pygame.K_LEFT:  # left arrow turns left
-                    pressed_left = True
-                elif event.key == pygame.K_RIGHT:  # right arrow turns right
-                    pressed_right = True
-                elif event.key == pygame.K_UP:  # up arrow goes up
-                    pressed_up = True
-                elif event.key == pygame.K_DOWN:  # down arrow goes down
-                    pressed_down = True
+            #     if event.key == pygame.K_LEFT:  # left arrow turns left
+            #         pressed_left = True
+            #     elif event.key == pygame.K_RIGHT:  # right arrow turns right
+            #         pressed_right = True
+                if event.key == pygame.K_UP:  # up arrow goes up
+                    boardState = p1.rotateCW(boardState)
+                # elif event.key == pygame.K_DOWN:  # down arrow goes down
+                #     pressed_down = True
                 elif event.key == pygame.K_z:
-                    pressed_z = True
-            elif event.type == pygame.KEYUP:  # check for key releases
-                if event.key == pygame.K_LEFT:  # left arrow turns left
-                    pressed_left = False
-                elif event.key == pygame.K_RIGHT:  # right arrow turns right
-                    pressed_right = False
-                elif event.key == pygame.K_UP:  # up arrow goes up
-                    pressed_up = False
-                elif event.key == pygame.K_DOWN:  # down arrow goes down
-                    pressed_down = False
-                elif event.key == pygame.K_z:
-                    pressed_z = False
+                    boardState = p1.rotateCCW(boardState)
+            # elif event.type == pygame.KEYUP:  # check for key releases
+            #     if event.key == pygame.K_LEFT:  # left arrow turns left
+            #         pressed_left = False
+            #     elif event.key == pygame.K_RIGHT:  # right arrow turns right
+            #         pressed_right = False
+            #     elif event.key == pygame.K_UP:  # up arrow goes up
+            #         pressed_up = False
+            #     elif event.key == pygame.K_DOWN:  # down arrow goes down
+            #         pressed_down = False
+            #     elif event.key == pygame.K_z:
+            #         pressed_z = False
 
-            keys = pygame.key.get_pressed()
-            # while keys != []:
-            if pressed_left:
-                boardState = p1.moveLeft(boardState)
-            if pressed_right:
-                boardState = p1.moveRight(boardState)
-            if pressed_up:
-                boardState = p1.rotateCW(boardState)
-            if pressed_z:
-                boardState = p1.rotateCCW(boardState)
-            if pressed_down:
-                boardState = p1.fall(boardState)
 
-        boardState = p1.fall(boardState)
-        pygame.time.wait(delay)  # this one
+            # if pressed_left:
+            #     boardState = p1.moveLeft(boardState)
+            # if pressed_right:
+            #     boardState = p1.moveRight(boardState)
+            # if pressed_up:
+            #     boardState = p1.rotateCW(boardState)
+            # if pressed_z:
+            #     boardState = p1.rotateCCW(boardState)
+            # if pressed_down:
+            #     boardState = p1.fall(boardState)
+
+        # boardState = p1.fall(boardState)
+        pygame.time.delay(framerate)  # this one
         pygame.display.update()
 
 
