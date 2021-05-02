@@ -116,6 +116,9 @@ class Tetromino:
     def incrementLock(self):
         self.lockCounter += 1
 
+    def getPiece(self):
+        return self.piece
+
     def getRot(self):
         return self.rot
 

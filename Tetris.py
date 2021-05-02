@@ -4,6 +4,15 @@ from mino import Tetromino
 
 BLACK = (50, 50, 50)
 WHITE = (200, 200, 200)
+
+colorDict = {'I': (41, 230, 240),
+             'J': (17, 49, 212),
+             'L': (237, 148, 59),
+             'O': (241, 245, 42),
+             'S': (70, 199, 85),
+             'T': (222, 41, 242),
+             'Z': (199, 30, 30)}
+
 blockSize = 30
 HEIGHT = 22
 WIDTH = 10
@@ -20,8 +29,8 @@ global boardState
 def main():
     fillQueue()
     boardState = getBoard()
-    p1 = Tetromino(nextQueue[0])
-    boardState = p1.draw(boardState)[1]
+    piece = Tetromino(nextQueue[0])
+    boardState = piece.draw(boardState)[1]
     global SCREEN, CLOCK
     pygame.init()
     SCREEN = pygame.display.set_mode((WINDOW_WIDTH + 200, WINDOW_HEIGHT))
@@ -31,18 +40,19 @@ def main():
 
     timer = 0
     while not gameOver:
-        drawGrid(boardState)
+        drawGrid(boardState, piece)
 
-        keyPresses(p1, boardState)
+        keyPresses(piece, boardState)
 
         if timer > fallRate:
-            boardState, successFall = p1.fall(boardState)
+            boardState, successFall = piece.fall(boardState)
             if not successFall:
-                p1.incrementLock()
+                piece.incrementLock()
             timer = 0
 
-        if p1.getLockState() >= maxLockCounter:
-            lockPiece(p1)
+        if piece.getLockState() >= maxLockCounter:
+            lockPiece(piece, boardState)
+            piece = replacePiece(piece)
 
         pygame.time.delay(repeatRate)  # this one
         pygame.display.update()
@@ -71,7 +81,7 @@ def keyPresses(curPiece, boardState):
                 boardState = curPiece.hardDrop(boardState)
 
 
-def drawGrid(boardState):
+def drawGrid(boardState, piece):
     SCREEN.fill(BLACK)
     for x in range(0, WINDOW_WIDTH, blockSize):
         for y in range(blockSize * 2, WINDOW_HEIGHT, blockSize):
@@ -83,10 +93,9 @@ def drawGrid(boardState):
         for x in range(WIDTH):
             if boardState[y][x] == "X":
                 mino = pygame.Rect(x * blockSize, y * blockSize, blockSize, blockSize)
-                pygame.draw.rect(SCREEN, (252, 3, 252), mino)
+                pygame.draw.rect(SCREEN, colorDict[piece.getPiece()], mino)
 
 
-""" Board file I/O """
 def getBoard():
     with open("NewBoard.txt") as boardFile:
         return boardFile.readlines()
@@ -112,6 +121,9 @@ def fillQueue():
         nextQueue.append(getNewPiece())
 
 
+def replacePiece(piece):
+
+
 def hold():
     global heldPiece
     if heldPiece == "":
@@ -124,9 +136,14 @@ def hold():
     print("held:{}\ncurrent:{}\nnext:{}".format(heldPiece, nextQueue[0], nextQueue[1:]))
 
 
-def lockPiece(piece):
+def lockPiece(piece, boardState):
+    print(boardState)
     x, y = piece.getPos()
-
+    for i in range(x, x+4):
+        for j in range(y, y+4):
+            print(i, j)
+            if boardState[j][i] == "X":
+                boardState[i] = boardState[i][:j] + piece.getPiece() + boardState[i][j+1:]
 
 
 if __name__ == '__main__':
