@@ -1,6 +1,6 @@
 import pygame
 import random
-from classes.mino import Tetromino
+from mino import Tetromino
 
 BLACK = (50, 50, 50)
 WHITE = (200, 200, 200)
