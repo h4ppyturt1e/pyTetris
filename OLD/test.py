@@ -1,6 +1,6 @@
 import pygame
 import random
-from mino import *
+from classes.mino import *
 
 BLACK = (50, 50, 50)
 WHITE = (200, 200, 200)

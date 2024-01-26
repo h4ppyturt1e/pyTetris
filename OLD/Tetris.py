@@ -1,6 +1,6 @@
 import pygame
 import random
-from mino import Tetromino
+from classes.mino import Tetromino
 
 BLACK = (50, 50, 50)
 WHITE = (200, 200, 200)
@@ -122,7 +122,7 @@ def fillQueue():
 
 
 def replacePiece(piece):
-
+    pass
 
 def hold():
     global heldPiece
